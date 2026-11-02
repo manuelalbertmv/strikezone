@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StrikeZone — FPS 3D</title>
+  <meta name="description" content="Shooter 3D en primera persona para navegador: sobrevive a seis oleadas de enemigos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <canvas id="game" tabindex="0"></canvas>
+
+  <!-- Pantalla de carga -->
+  <div id="loading">
+    <div class="logo">STRIKE<span>ZONE</span></div>
+    <div class="load-bar"><div></div></div>
+    <p id="load-text">Generando mundo…</p>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="vignette"></div>
+    <div id="damage-flash"></div>
+    <div id="dmg-indicators"></div>
+
+    <div id="crosshair">
+      <i class="ch"></i><i class="ch"></i><i class="ch"></i><i class="ch"></i>
+      <b class="dot"></b>
+    </div>
+    <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div id="reload"><span>RECARGANDO</span><div class="bar"><div id="reload-fill"></div></div></div>
+    <div id="low-ammo">PULSA [R] PARA RECARGAR</div>
+    <div id="center-msg"></div>
+    <div id="popups"></div>
+
+    <div id="banner"><div class="b-title"></div><div class="b-sub"></div></div>
+
+    <div id="top-center">
+      <div id="wave-label">OLEADA 1 / 6</div>
+      <div id="wave-sub"></div>
+    </div>
+
+    <div id="top-right">
+      <div class="score-box"><span>PUNTOS</span><b id="score">0</b></div>
+      <div class="score-box"><span>BAJAS</span><b id="kills">0</b></div>
+      <div id="killfeed"></div>
+    </div>
+
+    <div id="bottom-left">
+      <canvas id="radar" width="170" height="170"></canvas>
+      <div id="health">
+        <div class="h-head"><span class="h-icon">✚</span><b id="health-num">100</b></div>
+        <div class="h-bar"><div id="health-fill"></div></div>
+      </div>
+    </div>
+
+    <div id="bottom-right">
+      <div id="weapon-name">M4 ASALTO</div>
+      <div id="ammo"><b id="ammo-mag">30</b><span>/</span><em id="ammo-res">150</em></div>
+      <div id="weapon-slots">
+        <div class="slot"><kbd>1</kbd><span>RIFLE</span><small class="slot-ammo"></small></div>
+        <div class="slot"><kbd>2</kbd><span>PISTOLA</span><small class="slot-ammo"></small></div>
+        <div class="slot"><kbd>3</kbd><span>ESCOPETA</span><small class="slot-ammo"></small></div>
+      </div>
+    </div>
+    <div id="fps"></div>
+  </div>
+
+  <!-- Menús -->
+  <div id="overlay" class="hidden">
+    <section id="menu-main" class="panel main hidden">
+      <div class="logo">STRIKE<span>ZONE</span></div>
+      <p class="tagline">Defiende la zona industrial. Sobrevive a seis oleadas.</p>
+      <div class="field">
+        <label>DIFICULTAD</label>
+        <div id="diff-select" class="seg">
+          <button data-diff="facil">FÁCIL</button>
+          <button data-diff="normal">NORMAL</button>
+          <button data-diff="dificil">DIFÍCIL</button>
+        </div>
+        <p id="diff-desc" class="hint"></p>
+      </div>
+      <button id="btn-play" class="btn primary">JUGAR</button>
+      <div class="row">
+        <button id="btn-options" class="btn">OPCIONES</button>
+        <button id="btn-controls" class="btn">CONTROLES</button>
+      </div>
+      <p id="best-score" class="hint"></p>
+    </section>
+
+    <section id="menu-options" class="panel hidden">
+      <h2>OPCIONES</h2>
+      <div class="field">
+        <label>CALIDAD GRÁFICA</label>
+        <div id="quality-select" class="seg">
+          <button data-q="bajo">BAJA</button>
+          <button data-q="medio">MEDIA</button>
+          <button data-q="alto">ALTA</button>
+        </div>
+        <p class="hint">Baja: sin sombras ni luces interiores, menor resolución. Alta: sombras de 2048 px y resolución nativa.</p>
+      </div>
+      <div class="field slider"><label>SENSIBILIDAD DEL RATÓN <output id="opt-sens-val"></output></label><input id="opt-sens" type="range" min="0.2" max="3" step="0.05" /></div>
+      <div class="field slider"><label>CAMPO DE VISIÓN <output id="opt-fov-val"></output></label><input id="opt-fov" type="range" min="60" max="100" step="1" /></div>
+      <div class="field slider"><label>VOLUMEN <output id="opt-vol-val"></output></label><input id="opt-vol" type="range" min="0" max="1" step="0.05" /></div>
+      <label class="check"><input id="opt-music" type="checkbox" /> Música ambiental</label>
+      <label class="check"><input id="opt-fps" type="checkbox" /> Mostrar FPS</label>
+      <button id="btn-options-back" class="btn">VOLVER</button>
+    </section>
+
+    <section id="menu-controls" class="panel hidden">
+      <h2>CONTROLES</h2>
+      <div class="keys">
+        <div><kbd>W A S D</kbd><span>Moverse</span></div>
+        <div><kbd>Ratón</kbd><span>Apuntar con la cámara</span></div>
+        <div><kbd>Clic izq.</kbd><span>Disparar</span></div>
+        <div><kbd>Clic der.</kbd><span>Apuntar con la mira (ADS)</span></div>
+        <div><kbd>R</kbd><span>Recargar</span></div>
+        <div><kbd>Shift</kbd><span>Correr (hacia delante)</span></div>
+        <div><kbd>Espacio</kbd><span>Saltar</span></div>
+        <div><kbd>Ctrl / C</kbd><span>Agacharse</span></div>
+        <div><kbd>1 2 3</kbd><span>Rifle · Pistola · Escopeta</span></div>
+        <div><kbd>Rueda / Q</kbd><span>Cambiar de arma / arma anterior</span></div>
+        <div><kbd>Esc / P</kbd><span>Pausa</span></div>
+      </div>
+      <p class="hint">Consejos: dispara a los barriles rojos para provocar explosiones en cadena. Las cajas blancas curan y las verdes dan munición; reaparecen a los 25 s. Agacharse reduce la dispersión. Si usas Ctrl + W para avanzar agachado, el navegador puede intentar cerrar la pestaña: la tecla C es más segura.</p>
+      <button class="btn" data-back="menu-main">VOLVER</button>
+    </section>
+
+    <section id="menu-pause" class="panel hidden">
+      <h2>PAUSA</h2>
+      <p id="pause-hint" class="hint"></p>
+      <button id="btn-resume" class="btn primary">CONTINUAR</button>
+      <button id="btn-pause-options" class="btn">OPCIONES</button>
+      <button id="btn-restart" class="btn">REINICIAR PARTIDA</button>
+      <button id="btn-quit" class="btn danger">MENÚ PRINCIPAL</button>
+    </section>
+
+    <section id="menu-end" class="panel hidden">
+      <h1 id="end-title">VICTORIA</h1>
+      <p id="end-sub" class="tagline"></p>
+      <div id="end-stats"></div>
+      <button id="btn-again" class="btn primary">JUGAR DE NUEVO</button>
+      <button id="btn-end-menu" class="btn">MENÚ PRINCIPAL</button>
+    </section>
+  </div>
+
+  <div id="webgl-error" class="hidden">
+    <h2>WebGL no disponible</h2>
+    <p>Tu navegador o tarjeta gráfica no permite WebGL. Activa la aceleración por hardware o prueba con Chrome, Edge o Firefox actualizados.</p>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

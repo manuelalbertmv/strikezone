@@ -1,0 +1,40 @@
+// Estadísticas de las armas. Cada arma tiene daño, cadencia, alcance, dispersión
+// y retroceso propios.
+export const WEAPONS = [
+  {
+    id: 'rifle', name: 'M4 ASALTO', short: 'RIFLE', slot: 1,
+    auto: true, interval: 60 / 660,
+    damage: 25, headMul: 2.0, pellets: 1,
+    range: 150, falloffStart: 35, minDmg: 0.6,
+    spreadHip: 0.024, spreadAds: 0.0035, spreadMove: 0.03, spreadAir: 0.08,
+    bloom: 0.0055, bloomMax: 0.032,
+    mag: 30, reserve: 150, reloadTime: 2.0, reloadEmpty: 2.4,
+    recoilUp: 0.016, recoilSide: 0.007, kick: 0.045, kickRot: 0.06,
+    adsFov: 50, adsTime: 0.17, sound: 'rifle', tracer: 0.6,
+    adsPos: [0, -0.0855, -0.24], hipPos: [0.19, -0.19, -0.36],
+  },
+  {
+    id: 'pistol', name: 'P-9 PISTOLA', short: 'PISTOLA', slot: 2,
+    auto: false, interval: 0.14,
+    damage: 34, headMul: 2.2, pellets: 1,
+    range: 80, falloffStart: 18, minDmg: 0.5,
+    spreadHip: 0.016, spreadAds: 0.0025, spreadMove: 0.022, spreadAir: 0.06,
+    bloom: 0.01, bloomMax: 0.03,
+    mag: 12, reserve: 72, reloadTime: 1.35, reloadEmpty: 1.6,
+    recoilUp: 0.032, recoilSide: 0.008, kick: 0.06, kickRot: 0.14,
+    adsFov: 62, adsTime: 0.12, sound: 'pistol', tracer: 0.3,
+    adsPos: [0, -0.052, -0.3], hipPos: [0.17, -0.17, -0.34],
+  },
+  {
+    id: 'shotgun', name: 'S12 ESCOPETA', short: 'ESCOPETA', slot: 3,
+    auto: false, interval: 0.82,
+    damage: 13, headMul: 1.5, pellets: 9,
+    range: 42, falloffStart: 8, minDmg: 0.15,
+    spreadHip: 0.075, spreadAds: 0.055, spreadMove: 0.015, spreadAir: 0.03,
+    bloom: 0, bloomMax: 0,
+    mag: 7, reserve: 35, reloadTime: 0.5, reloadStart: 0.3, perShell: true,
+    recoilUp: 0.075, recoilSide: 0.015, kick: 0.11, kickRot: 0.22,
+    adsFov: 64, adsTime: 0.2, sound: 'shotgun', tracer: 0.5,
+    adsPos: [0, -0.047, -0.26], hipPos: [0.2, -0.2, -0.36],
+  },
+];
